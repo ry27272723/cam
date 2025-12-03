@@ -11,18 +11,21 @@ import { MagicMode } from './modes/magic.js';
 class HandGestureEffectsApp {
     constructor() {
         // DOM elements
+        this.selectionScreen = document.getElementById('selectionScreen');
+        this.cameraScreen = document.getElementById('cameraScreen');
+        this.loading = document.getElementById('loading');
         this.videoElement = document.getElementById('webcam');
         this.canvas = document.getElementById('effectsCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.toggleBtn = document.getElementById('toggleBtn');
         this.gestureStatus = document.getElementById('gestureStatus');
         this.modeStatus = document.getElementById('modeStatus');
-        this.loading = document.getElementById('loading');
+        this.backBtn = document.getElementById('backBtn');
 
         // State
+        this.isInitialized = false;
         this.isRunning = false;
         this.currentMode = null;
-        this.currentModeName = 'nightsky';
+        this.currentModeName = null;
         this.gestureDetector = null;
         this.lastGesture = null;
         this.lastPosition = null;
@@ -37,45 +40,96 @@ class HandGestureEffectsApp {
     /**
      * Initialize the application
      */
-    async init() {
-        // Set up event listeners
-        this.setupEventListeners();
+    init() {
+        // Set up event listeners for mode selection
+        const modeCards = document.querySelectorAll('.mode-card');
+        modeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const mode = card.dataset.mode;
+                this.startMode(mode);
+            });
+        });
 
-        // Initialize modes
-        this.modes = {
-            nightsky: new NightSkyMode(),
-            garden: new GardenMode(this.canvas.height),
-            magic: new MagicMode()
-        };
+        // Back button
+        this.backBtn.addEventListener('click', () => {
+            this.returnToSelection();
+        });
 
-        this.currentMode = this.modes[this.currentModeName];
+        // Window resize
+        window.addEventListener('resize', () => {
+            if (this.isInitialized) {
+                this.resizeCanvas();
+            }
+        });
+    }
 
-        // Show initial mode status
-        this.updateModeStatus();
+    /**
+     * Start a mode - initialize camera and gesture detection
+     */
+    async startMode(modeName) {
+        this.currentModeName = modeName;
+
+        // Show loading
+        this.selectionScreen.classList.add('hidden');
+        this.loading.classList.remove('hidden');
 
         try {
-            // Initialize webcam
-            await this.initializeWebcam();
+            // Initialize if first time
+            if (!this.isInitialized) {
+                await this.initializeSystem();
+            }
 
-            // Initialize gesture detector
-            this.gestureDetector = new GestureDetector(
-                this.videoElement,
-                (results) => this.handleGestureResults(results)
-            );
+            // Initialize modes (with current canvas height)
+            this.modes = {
+                nightsky: new NightSkyMode(),
+                garden: new GardenMode(this.canvas.height),
+                magic: new MagicMode()
+            };
 
-            await this.gestureDetector.initialize();
+            // Set current mode
+            this.currentMode = this.modes[modeName];
+            this.updateModeStatus();
 
-            // Hide loading screen
+            // Show camera screen
             this.loading.classList.add('hidden');
+            this.cameraScreen.classList.remove('hidden');
 
-            // Start animation loop (even when not detecting, for smooth rendering)
-            this.startAnimationLoop();
+            // Start gesture detection
+            this.isRunning = true;
+
+            console.log('Mode started:', modeName);
 
         } catch (error) {
             console.error('Initialization error:', error);
             this.loading.querySelector('p').textContent =
-                'Error: Could not access webcam. Please allow camera access and reload.';
+                'Error: Could not access camera. Please allow camera access and reload.';
         }
+    }
+
+    /**
+     * Initialize camera and gesture detection system
+     */
+    async initializeSystem() {
+        console.log('Initializing system...');
+
+        // Initialize webcam
+        await this.initializeWebcam();
+        console.log('Webcam initialized');
+
+        // Initialize gesture detector
+        this.gestureDetector = new GestureDetector(
+            this.videoElement,
+            (results) => this.handleGestureResults(results)
+        );
+
+        await this.gestureDetector.initialize();
+        console.log('Gesture detector initialized');
+
+        // Start animation loop
+        this.startAnimationLoop();
+        console.log('Animation loop started');
+
+        this.isInitialized = true;
     }
 
     /**
@@ -86,7 +140,8 @@ class HandGestureEffectsApp {
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     width: { ideal: 1280 },
-                    height: { ideal: 720 }
+                    height: { ideal: 720 },
+                    facingMode: 'user'
                 }
             });
 
@@ -95,14 +150,19 @@ class HandGestureEffectsApp {
             // Wait for video to load
             await new Promise((resolve) => {
                 this.videoElement.onloadedmetadata = () => {
+                    this.videoElement.play();
                     resolve();
                 };
             });
+
+            // Small delay to ensure video is playing
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             // Resize canvas to match video
             this.resizeCanvas();
 
         } catch (error) {
+            console.error('Webcam error:', error);
             throw new Error('Webcam access denied or unavailable');
         }
     }
@@ -111,92 +171,52 @@ class HandGestureEffectsApp {
      * Resize canvas to match video dimensions
      */
     resizeCanvas() {
-        this.canvas.width = this.videoElement.videoWidth || 1280;
-        this.canvas.height = this.videoElement.videoHeight || 720;
+        const videoWidth = this.videoElement.videoWidth || 1280;
+        const videoHeight = this.videoElement.videoHeight || 720;
+
+        this.canvas.width = videoWidth;
+        this.canvas.height = videoHeight;
+
+        console.log('Canvas resized to:', videoWidth, 'x', videoHeight);
 
         // Update garden mode with new canvas height
-        if (this.modes.garden) {
+        if (this.modes && this.modes.garden) {
             this.modes.garden.setCanvasHeight(this.canvas.height);
         }
     }
 
     /**
-     * Set up event listeners
+     * Return to mode selection screen
      */
-    setupEventListeners() {
-        // Toggle button
-        this.toggleBtn.addEventListener('click', () => {
-            this.toggleDetection();
-        });
+    returnToSelection() {
+        // Stop detection
+        this.isRunning = false;
 
-        // Mode selection buttons
-        const modeButtons = document.querySelectorAll('.mode-btn');
-        modeButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const mode = btn.dataset.mode;
-                this.switchMode(mode);
-
-                // Update active button
-                modeButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
-
-        // Window resize
-        window.addEventListener('resize', () => {
-            this.resizeCanvas();
-        });
-    }
-
-    /**
-     * Toggle gesture detection
-     */
-    toggleDetection() {
-        this.isRunning = !this.isRunning;
-
-        if (this.isRunning) {
-            this.toggleBtn.textContent = 'Stop';
-            this.toggleBtn.classList.add('active');
-        } else {
-            this.toggleBtn.textContent = 'Start';
-            this.toggleBtn.classList.remove('active');
-
-            // Clear current effects when stopping
-            this.currentMode.clear();
-            this.lastGesture = null;
-            this.lastPosition = null;
-            this.updateGestureStatus(null);
-        }
-    }
-
-    /**
-     * Switch between modes
-     */
-    switchMode(modeName) {
-        // Clear current mode effects
+        // Clear effects
         if (this.currentMode) {
             this.currentMode.clear();
         }
 
-        this.currentModeName = modeName;
-        this.currentMode = this.modes[modeName];
-
         // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Update status
-        this.updateModeStatus();
 
         // Reset gesture state
         this.lastGesture = null;
         this.lastPosition = null;
+        this.updateGestureStatus(null);
+
+        // Show selection screen
+        this.cameraScreen.classList.add('hidden');
+        this.selectionScreen.classList.remove('hidden');
     }
 
     /**
      * Handle gesture detection results
      */
     handleGestureResults(results) {
-        if (!this.isRunning) return;
+        if (!this.isRunning || !this.currentMode) {
+            return;
+        }
 
         const { gesture, position, fingerTip, gestureChanged, landmarks } = results;
 
@@ -225,17 +245,20 @@ class HandGestureEffectsApp {
         if (gestureChanged) {
             // Gesture ended
             if (this.lastGesture && !gesture) {
+                console.log('Gesture ended:', this.lastGesture);
                 this.currentMode.onGestureEnd(this.lastGesture, this.lastPosition);
             }
             // New gesture started
             else if (gesture && gesture !== this.lastGesture) {
                 // End previous gesture if any
                 if (this.lastGesture) {
+                    console.log('Gesture ended:', this.lastGesture);
                     this.currentMode.onGestureEnd(this.lastGesture, this.lastPosition);
                 }
 
                 // Start new gesture
                 const position = gesture === 'one_finger' ? canvasFingerTip : canvasPosition;
+                console.log('Gesture started:', gesture, position);
                 this.currentMode.onGestureStart(gesture, position);
             }
         }
@@ -270,9 +293,9 @@ class HandGestureEffectsApp {
      */
     updateModeStatus() {
         const modeNames = {
-            nightsky: '🌙 Night Sky Mode',
-            garden: '🌸 Garden Mode',
-            magic: '✨ Magic Mode'
+            nightsky: '🌙 Night Sky',
+            garden: '🌸 Garden',
+            magic: '✨ Magic'
         };
 
         this.modeStatus.textContent = modeNames[this.currentModeName];
@@ -282,13 +305,18 @@ class HandGestureEffectsApp {
      * Start animation loop
      */
     startAnimationLoop() {
-        const animate = () => {
+        let lastTime = performance.now();
+
+        const animate = (currentTime) => {
+            const deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+
             // Clear canvas
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
             // Update and draw current mode effects
-            if (this.currentMode) {
-                this.currentMode.update(16); // ~60fps
+            if (this.currentMode && this.isRunning) {
+                this.currentMode.update(deltaTime);
                 this.currentMode.draw(this.ctx);
             }
 
@@ -296,7 +324,7 @@ class HandGestureEffectsApp {
             this.animationFrameId = requestAnimationFrame(animate);
         };
 
-        animate();
+        animate(performance.now());
     }
 
     /**

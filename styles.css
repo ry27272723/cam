@@ -6,145 +6,123 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #000;
     color: #fff;
-    min-height: 100vh;
-    padding: 20px;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
 }
 
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-/* Header */
-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-header h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.subtitle {
-    font-size: 1.1em;
-    opacity: 0.9;
-}
-
-/* Mode Selector */
-.mode-selector {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.mode-selector h2 {
-    text-align: center;
-    margin-bottom: 15px;
-    font-size: 1.5em;
-}
-
-.mode-buttons {
+/* Selection Screen */
+.selection-screen {
+    width: 100%;
+    height: 100vh;
     display: flex;
-    gap: 15px;
+    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
+    background: linear-gradient(135deg, #000 0%, #1a1a2e 50%, #000 100%);
 }
 
-.mode-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-    padding: 20px 30px;
+.selection-screen.hidden {
+    display: none;
+}
+
+.selection-content {
+    text-align: center;
+    max-width: 1200px;
+    padding: 40px 20px;
+}
+
+.selection-content h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.selection-content .subtitle {
+    font-size: 1.3em;
+    opacity: 0.8;
+    margin-bottom: 50px;
+}
+
+/* Mode Cards */
+.mode-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.mode-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px 30px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     color: #fff;
+    text-align: center;
+}
+
+.mode-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(255, 255, 255, 0.2);
+}
+
+.mode-card-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+.mode-card h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+.mode-card p {
     font-size: 1em;
+    opacity: 0.8;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.gesture-preview {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    min-width: 150px;
-}
-
-.mode-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-}
-
-.mode-btn.active {
-    background: rgba(255, 255, 255, 0.4);
-    border-color: #fff;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-}
-
-.mode-icon {
-    font-size: 2.5em;
-}
-
-.mode-name {
-    font-weight: 600;
-}
-
-/* Gesture Guide */
-.gesture-guide {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 15px 20px;
-    margin-bottom: 20px;
-}
-
-.gesture-guide h3 {
-    margin-bottom: 10px;
-    font-size: 1.2em;
-}
-
-.gesture-list {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.gesture-item {
-    display: flex;
-    align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 8px 15px;
-    border-radius: 8px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.gesture-icon {
-    font-size: 1.5em;
+.gesture-preview span {
+    font-size: 0.9em;
+    opacity: 0.7;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
 }
 
-.gesture-label {
-    font-size: 0.95em;
-}
-
-/* Canvas Container */
-.canvas-container {
+/* Camera Screen */
+.camera-screen {
+    width: 100vw;
+    height: 100vh;
     position: relative;
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     background: #000;
+}
+
+.camera-screen.hidden {
+    display: none;
 }
 
 #webcam {
     width: 100%;
-    height: auto;
-    display: block;
+    height: 100%;
+    object-fit: cover;
 }
 
 #effectsCanvas {
@@ -159,22 +137,51 @@ header h1 {
 /* Status Overlay */
 .status-overlay {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 10;
+}
+
+.back-btn {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateX(-5px);
+}
+
+.status-info {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items: flex-end;
 }
 
 .gesture-status,
 .mode-status {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
     padding: 10px 20px;
     border-radius: 25px;
     font-size: 1em;
     font-weight: 600;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .gesture-status {
@@ -185,37 +192,6 @@ header h1 {
     color: #60a5fa;
 }
 
-/* Toggle Button */
-.toggle-btn {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: #fff;
-    padding: 15px 40px;
-    border-radius: 30px;
-    font-size: 1.2em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-}
-
-.toggle-btn:hover {
-    transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.4);
-}
-
-.toggle-btn:active {
-    transform: translateX(-50%) translateY(0);
-}
-
-.toggle-btn.active {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
 /* Loading Indicator */
 .loading {
     position: fixed;
@@ -223,7 +199,7 @@ header h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.95);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -239,7 +215,7 @@ header h1 {
 .spinner {
     width: 60px;
     height: 60px;
-    border: 5px solid rgba(255, 255, 255, 0.3);
+    border: 5px solid rgba(255, 255, 255, 0.2);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -258,25 +234,31 @@ header h1 {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    header h1 {
-        font-size: 1.8em;
+    .selection-content h1 {
+        font-size: 2em;
     }
 
-    .mode-buttons {
-        flex-direction: column;
+    .selection-content .subtitle {
+        font-size: 1.1em;
     }
 
-    .mode-btn {
-        width: 100%;
+    .mode-cards {
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
 
-    .gesture-list {
-        flex-direction: column;
+    .mode-card {
+        padding: 30px 20px;
     }
 
     .status-overlay {
-        top: 10px;
-        left: 10px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .status-info {
+        align-items: flex-start;
+        width: 100%;
     }
 
     .gesture-status,
@@ -284,4 +266,9 @@ header h1 {
         font-size: 0.9em;
         padding: 8px 15px;
     }
+}
+
+/* Utility */
+.hidden {
+    display: none !important;
 }

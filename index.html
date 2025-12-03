@@ -7,71 +7,68 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <h1>🎨 Hand Gesture Visual Effects</h1>
-            <p class="subtitle">Control magical effects with your hand gestures</p>
-        </header>
+    <!-- Mode Selection Screen -->
+    <div id="selectionScreen" class="selection-screen">
+        <div class="selection-content">
+            <h1>✨ Hand Gesture Visual Effects</h1>
+            <p class="subtitle">Choose your magical theme</p>
 
-        <!-- Mode Selector -->
-        <div class="mode-selector">
-            <h2>Choose a Theme</h2>
-            <div class="mode-buttons">
-                <button class="mode-btn active" data-mode="nightsky">
-                    <span class="mode-icon">🌙</span>
-                    <span class="mode-name">Night Sky</span>
+            <div class="mode-cards">
+                <button class="mode-card" data-mode="nightsky">
+                    <div class="mode-card-icon">🌙</div>
+                    <h2>Night Sky</h2>
+                    <p>Shooting stars, fireworks, and glowing halos</p>
+                    <div class="gesture-preview">
+                        <span>☝️ Shooting Star</span>
+                        <span>✊ Firework</span>
+                        <span>✋ Halo</span>
+                    </div>
                 </button>
-                <button class="mode-btn" data-mode="garden">
-                    <span class="mode-icon">🌸</span>
-                    <span class="mode-name">Garden</span>
+
+                <button class="mode-card" data-mode="garden">
+                    <div class="mode-card-icon">🌸</div>
+                    <h2>Garden</h2>
+                    <p>Blooming flowers, rain, and nature's beauty</p>
+                    <div class="gesture-preview">
+                        <span>✊ Rain</span>
+                        <span>✋ Growing Flowers</span>
+                        <span>☝️ Bloom</span>
+                    </div>
                 </button>
-                <button class="mode-btn" data-mode="magic">
-                    <span class="mode-icon">✨</span>
-                    <span class="mode-name">Magic</span>
+
+                <button class="mode-card" data-mode="magic">
+                    <div class="mode-card-icon">✨</div>
+                    <h2>Magic</h2>
+                    <p>Mystical circles, spark orbs, and spells</p>
+                    <div class="gesture-preview">
+                        <span>☝️ Spark Orb</span>
+                        <span>✋ Magic Circle</span>
+                        <span>✊ Clear</span>
+                    </div>
                 </button>
             </div>
         </div>
+    </div>
 
-        <!-- Gesture Guide -->
-        <div class="gesture-guide">
-            <h3>Gestures:</h3>
-            <div class="gesture-list">
-                <div class="gesture-item">
-                    <span class="gesture-icon">✋</span>
-                    <span class="gesture-label">Open Palm</span>
-                </div>
-                <div class="gesture-item">
-                    <span class="gesture-icon">✊</span>
-                    <span class="gesture-label">Closed Fist</span>
-                </div>
-                <div class="gesture-item">
-                    <span class="gesture-icon">☝️</span>
-                    <span class="gesture-label">One Finger</span>
-                </div>
-            </div>
-        </div>
+    <!-- Camera Screen -->
+    <div id="cameraScreen" class="camera-screen hidden">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="effectsCanvas"></canvas>
 
-        <!-- Main Canvas Area -->
-        <div class="canvas-container">
-            <video id="webcam" autoplay playsinline></video>
-            <canvas id="effectsCanvas"></canvas>
-
-            <!-- Status Overlay -->
-            <div class="status-overlay">
-                <div id="gestureStatus" class="gesture-status">No gesture detected</div>
+        <!-- Status Overlay -->
+        <div class="status-overlay">
+            <button id="backBtn" class="back-btn">← Back</button>
+            <div class="status-info">
                 <div id="modeStatus" class="mode-status">Night Sky Mode</div>
+                <div id="gestureStatus" class="gesture-status">No gesture detected</div>
             </div>
-
-            <!-- Control Button -->
-            <button id="toggleBtn" class="toggle-btn">Start</button>
         </div>
+    </div>
 
-        <!-- Loading Indicator -->
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Loading hand detection model...</p>
-        </div>
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Loading camera and hand detection...</p>
     </div>
 
     <!-- MediaPipe Hands -->
