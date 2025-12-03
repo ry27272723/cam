@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+        }
+        #log {
+            white-space: pre-wrap;
+            background: #222;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Test</h1>
+    <div id="log"></div>
+    <canvas id="testCanvas" width="400" height="400"></canvas>
+
+    <script type="module">
+        const log = document.getElementById('log');
+        function addLog(msg) {
+            log.textContent += `[${new Date().toLocaleTimeString()}] ${msg}\n`;
+            console.log(msg);
+        }
+
+        addLog('Starting tests...');
+
+        // Test 1: Canvas
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        addLog('Canvas created: ' + (ctx ? 'OK' : 'FAIL'));
+
+        // Test 2: Draw simple shape
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(50, 50, 100, 100);
+        addLog('Drew red rectangle');
+
+        // Test 3: Import modules
+        try {
+            const effectsModule = await import('./js/effects.js');
+            addLog('Effects module loaded: OK');
+            addLog('Available exports: ' + Object.keys(effectsModule).join(', '));
+
+            // Test 4: Create a particle
+            const { Particle } = effectsModule;
+            const particle = new Particle(200, 200, 1, 1, '#ffff00', 5, 5000);
+            addLog('Particle created: OK');
+
+            // Test 5: Draw particle
+            particle.draw(ctx);
+            addLog('Particle drawn: OK');
+
+            // Test 6: Load mode
+            const nightSkyModule = await import('./js/modes/nightSky.js');
+            addLog('NightSky module loaded: OK');
+
+            const { NightSkyMode } = nightSkyModule;
+            const mode = new NightSkyMode();
+            addLog('NightSkyMode instance created: OK');
+
+            // Test 7: Trigger effect
+            addLog('Testing gesture start...');
+            mode.onGestureStart('one_finger', { x: 200, y: 200 });
+            addLog('Gesture started');
+
+            // Test 8: Update and draw
+            let frame = 0;
+            function animate() {
+                if (frame < 100) {
+                    ctx.clearRect(0, 0, 400, 400);
+                    mode.update(16);
+                    mode.draw(ctx);
+                    frame++;
+                    requestAnimationFrame(animate);
+                } else {
+                    addLog('Animation test completed: ' + frame + ' frames');
+                }
+            }
+            animate();
+
+        } catch (error) {
+            addLog('ERROR: ' + error.message);
+            addLog('Stack: ' + error.stack);
+        }
+    </script>
+</body>
+</html>
