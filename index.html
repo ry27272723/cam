@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Gesture Visual Effects</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🎨 Hand Gesture Visual Effects</h1>
+            <p class="subtitle">Control magical effects with your hand gestures</p>
+        </header>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <h2>Choose a Theme</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn active" data-mode="nightsky">
+                    <span class="mode-icon">🌙</span>
+                    <span class="mode-name">Night Sky</span>
+                </button>
+                <button class="mode-btn" data-mode="garden">
+                    <span class="mode-icon">🌸</span>
+                    <span class="mode-name">Garden</span>
+                </button>
+                <button class="mode-btn" data-mode="magic">
+                    <span class="mode-icon">✨</span>
+                    <span class="mode-name">Magic</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Gesture Guide -->
+        <div class="gesture-guide">
+            <h3>Gestures:</h3>
+            <div class="gesture-list">
+                <div class="gesture-item">
+                    <span class="gesture-icon">✋</span>
+                    <span class="gesture-label">Open Palm</span>
+                </div>
+                <div class="gesture-item">
+                    <span class="gesture-icon">✊</span>
+                    <span class="gesture-label">Closed Fist</span>
+                </div>
+                <div class="gesture-item">
+                    <span class="gesture-icon">☝️</span>
+                    <span class="gesture-label">One Finger</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Canvas Area -->
+        <div class="canvas-container">
+            <video id="webcam" autoplay playsinline></video>
+            <canvas id="effectsCanvas"></canvas>
+
+            <!-- Status Overlay -->
+            <div class="status-overlay">
+                <div id="gestureStatus" class="gesture-status">No gesture detected</div>
+                <div id="modeStatus" class="mode-status">Night Sky Mode</div>
+            </div>
+
+            <!-- Control Button -->
+            <button id="toggleBtn" class="toggle-btn">Start</button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading hand detection model...</p>
+        </div>
+    </div>
+
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <!-- Application Scripts -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
